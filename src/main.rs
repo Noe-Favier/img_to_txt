@@ -7,6 +7,7 @@ static SMALL_WIDTH:     u32 = 32;    //32 char = 64 px
 static MEDIUM_WIDTH:    u32 = 64;    //64 char = 128 px
 static BIG_WIDTH:       u32 = 128;   //64 char = 256 px
 
+mod matrix_converter;
 
 fn main() {
     let mut size: String = String::from("medium");
@@ -44,8 +45,55 @@ fn main() {
         image::imageops::dither(&mut recolored_img, &image::imageops::BiLevel);
         println!("image successfully recolored to black&white");
 
-        recolored_img.save("cat.png").unwrap();
 
+        for charset in [matrix_converter::get_dots_charset(), matrix_converter::get_square_charset()] {
+            //
+            for y_pix in (0..recolored_img.height()).step_by(2) {
+                for x_pix in (0..recolored_img.width()).step_by(2) {
+                    // get matrix
+                    let up_left = (recolored_img.get_pixel(x_pix, y_pix).0[0])/255;
+                    
+                    let up_right: u8;
+                    if recolored_img.width()%2 == 0 {
+                        //prevent oob
+                        up_right = (recolored_img.get_pixel(x_pix+1, y_pix).0[0])/255;
+                    }else{
+                        up_right = 0;
+                    }
+    
+                    let down_left: u8;
+                    if recolored_img.height()%2 == 0{
+                        //prevent oob
+                        down_left = (recolored_img.get_pixel(x_pix, y_pix+1).0[0])/255;
+                    }else{
+                        down_left = 0;
+                    }
+                    
+                    let down_right: u8;
+                    if recolored_img.width()%2 == 0  && recolored_img.height()%2 == 0{
+                        //prevent oob
+                        down_right = (recolored_img.get_pixel(x_pix+1, y_pix+1).0[0])/255;
+                    }else{
+                        down_right = 0;
+                    }
+                     
+                    //----//
+                    
+                    print!("{}", matrix_converter::convert_square([
+                        up_left,
+                        up_right,
+                        down_left,
+                        down_right,
+                    ], charset.clone()));
+                    
+                }
+                print!("\n");
+            }
+            //
+            println!("\n");
+        }
+        
+        //end
     }else{
         panic!("Please provide a path to an image");
     }
