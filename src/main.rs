@@ -51,12 +51,12 @@ fn main() {
             for y_pix in (0..recolored_img.height()).step_by(2) {
                 for x_pix in (0..recolored_img.width()).step_by(2) {
                     // get matrix
-                    let up_left = (recolored_img.get_pixel(x_pix, y_pix).0[0])/255;
+                    let up_left = 1-(recolored_img.get_pixel(x_pix, y_pix).0[0])/255;
                     
                     let up_right: u8;
                     if recolored_img.width()%2 == 0 {
                         //prevent oob
-                        up_right = (recolored_img.get_pixel(x_pix+1, y_pix).0[0])/255;
+                        up_right = 1-(recolored_img.get_pixel(x_pix+1, y_pix).0[0])/255;
                     }else{
                         up_right = 0;
                     }
@@ -64,7 +64,7 @@ fn main() {
                     let down_left: u8;
                     if recolored_img.height()%2 == 0{
                         //prevent oob
-                        down_left = (recolored_img.get_pixel(x_pix, y_pix+1).0[0])/255;
+                        down_left = 1-(recolored_img.get_pixel(x_pix, y_pix+1).0[0])/255;
                     }else{
                         down_left = 0;
                     }
@@ -72,7 +72,7 @@ fn main() {
                     let down_right: u8;
                     if recolored_img.width()%2 == 0  && recolored_img.height()%2 == 0{
                         //prevent oob
-                        down_right = (recolored_img.get_pixel(x_pix+1, y_pix+1).0[0])/255;
+                        down_right = 1-(recolored_img.get_pixel(x_pix+1, y_pix+1).0[0])/255;
                     }else{
                         down_right = 0;
                     }
