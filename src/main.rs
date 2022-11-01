@@ -48,13 +48,20 @@ fn main() {
         for color_invertor in [false, true] {
             for charset in [matrix_converter::get_dots_charset(), matrix_converter::get_square_charset()] {
             //
-                for y_pix in (0..recolored_img.height()).step_by(2) {
-                    for x_pix in (0..recolored_img.width()).step_by(2) {
+                for y_pix in (0..recolored_img.height()-1).step_by(2) {
+                    for x_pix in (0..recolored_img.width()-1).step_by(2) {
                         // get matrix
-                        let up_left = invert(color_invertor, (recolored_img.get_pixel(x_pix, y_pix).0[0])/255);
-                        
+
+                        let up_left: u8;
+                        if y_pix > recolored_img.height()-1 || x_pix > recolored_img.width()-1 {
+                            //prevent oob
+                            up_left = invert(color_invertor, 0);
+                        }else{
+                            up_left = invert(color_invertor, (recolored_img.get_pixel(x_pix+1, y_pix).0[0])/255);
+                        }
+
                         let up_right: u8;
-                        if recolored_img.width()%2 != 0 && x_pix == recolored_img.width()-1 {
+                        if  y_pix > recolored_img.height()-1 || x_pix+1 > recolored_img.width()-1 {
                             //prevent oob
                             up_right = invert(color_invertor, 0);
                         }else{
@@ -62,7 +69,7 @@ fn main() {
                         }
         
                         let down_left: u8;
-                        if recolored_img.height()%2 != 0 && y_pix == recolored_img.height()-1 {
+                        if y_pix+1 > recolored_img.height()-1 || x_pix > recolored_img.width()-1 {
                             //prevent oob
                             down_left = invert(color_invertor, 0);
                         }else{
@@ -70,7 +77,7 @@ fn main() {
                         }
                         
                         let down_right: u8;
-                        if recolored_img.width()%2 != 0  && recolored_img.height()%2 != 0 && x_pix == recolored_img.width()-1 && y_pix == recolored_img.height()-1 {
+                        if y_pix+1 > recolored_img.height()-1 || x_pix+1 > recolored_img.width()-1 {
                             //prevent oob
                             down_right = invert(color_invertor, 0);
                         }else{
